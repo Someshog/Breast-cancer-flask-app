@@ -149,3 +149,6 @@ Desktop.ini
 # Temporary files
 *.tmp
 *.temp
+
+# Test files
+test_app.py

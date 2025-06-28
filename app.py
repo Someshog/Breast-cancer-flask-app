@@ -37,6 +37,9 @@ def load_or_train_model():
             print("Loading existing model...")
             model = joblib.load(model_path)
             scaler = joblib.load(scaler_path)
+            # Load feature names from dataset
+            data = load_breast_cancer()
+            feature_names = data.feature_names
             print("Model loaded successfully!")
         else:
             # Train new model using notebook's exact approach
@@ -143,7 +146,23 @@ def load_or_train_model():
 @app.route('/')
 def index():
     """Main page with prediction form"""
-    return render_template('index.html', feature_names=feature_names)
+    try:
+        # Ensure feature_names is loaded
+        if feature_names is None:
+            print("Warning: feature_names is None, reloading...")
+            data = load_breast_cancer()
+            globals()['feature_names'] = data.feature_names
+        
+        return render_template('index.html', feature_names=feature_names)
+    except Exception as e:
+        print(f"Error in index route: {e}")
+        # Fallback: load feature names directly
+        try:
+            data = load_breast_cancer()
+            return render_template('index.html', feature_names=data.feature_names)
+        except Exception as e2:
+            print(f"Fallback also failed: {e2}")
+            return f"Error loading application: {e}", 500
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -202,15 +221,26 @@ def about():
 @app.route('/api/model-info')
 def model_info():
     """API endpoint to get model information"""
-    model_name = type(model).__name__ if model else "Unknown"
-    return jsonify({
-        'model_type': model_name,
-        'features_count': len(feature_names),
-        'feature_names': feature_names.tolist(),
-        'training_approach': 'Cleaned data with outlier removal (Z-score > 3)',
-        'model_selection': 'Best F1 score on validation set',
-        'data_preprocessing': 'StandardScaler on cleaned dataset'
-    })
+    try:
+        # Ensure feature_names is available
+        if feature_names is None:
+            data = load_breast_cancer()
+            feature_list = data.feature_names.tolist()
+        else:
+            feature_list = feature_names.tolist()
+            
+        model_name = type(model).__name__ if model else "Unknown"
+        return jsonify({
+            'model_type': model_name,
+            'features_count': len(feature_list),
+            'feature_names': feature_list,
+            'training_approach': 'Cleaned data with outlier removal (Z-score > 3)',
+            'model_selection': 'Best F1 score on validation set',
+            'data_preprocessing': 'StandardScaler on cleaned dataset'
+        })
+    except Exception as e:
+        print(f"Error in model_info: {e}")
+        return jsonify({'error': 'Unable to retrieve model information'}), 500
 
 if __name__ == '__main__':
     # Initialize model
