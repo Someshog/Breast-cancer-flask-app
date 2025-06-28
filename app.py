@@ -31,18 +31,40 @@ def load_or_train_model():
     model_path = 'models/breast_cancer_model.pkl'
     scaler_path = 'models/scaler.pkl'
     
+    # Debug info
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"Models directory exists: {os.path.exists('models')}")
+    if os.path.exists('models'):
+        print(f"Models directory contents: {os.listdir('models')}")
+    
     try:
         if os.path.exists(model_path) and os.path.exists(scaler_path):
             # Load existing model
             print("Loading existing model...")
-            model = joblib.load(model_path)
-            scaler = joblib.load(scaler_path)
-            # Load feature names from dataset
-            data = load_breast_cancer()
-            feature_names = data.feature_names
-            print("Model loaded successfully!")
-        else:
-            # Train new model using notebook's exact approach
+            print(f"Model path exists: {os.path.exists(model_path)}")
+            print(f"Scaler path exists: {os.path.exists(scaler_path)}")
+            
+            try:
+                model = joblib.load(model_path)
+                scaler = joblib.load(scaler_path)
+                
+                print(f"Model loaded: {model is not None}")
+                print(f"Scaler loaded: {scaler is not None}")
+                print(f"Model type: {type(model).__name__}")
+                print(f"Scaler type: {type(scaler).__name__}")
+                
+                # Load feature names from dataset
+                data = load_breast_cancer()
+                feature_names = data.feature_names
+                print("Model loaded successfully!")
+                
+            except Exception as load_error:
+                print(f"Error loading existing model files: {load_error}")
+                print("Falling back to training new model...")
+                # Don't raise, just fall through to training
+                
+        # Training section (either no files exist OR loading failed)
+        if model is None or scaler is None:
             print("Training model using notebook's approach with cleaned data...")
             
             # Load breast cancer dataset
@@ -168,6 +190,17 @@ def index():
 def predict():
     """Handle prediction requests with optimized processing"""
     try:
+        # Ensure model and scaler are loaded
+        if model is None or scaler is None:
+            print("Warning: Model or scaler is None, reloading...")
+            load_or_train_model()
+            
+        if model is None:
+            return jsonify({'error': 'Model not available. Please try again later.'}), 500
+            
+        if scaler is None:
+            return jsonify({'error': 'Scaler not available. Please try again later.'}), 500
+        
         # Get form data with validation
         features = []
         missing_fields = []

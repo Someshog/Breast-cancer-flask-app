@@ -140,8 +140,8 @@ Desktop.ini
 # PyCharm
 .idea/
 
-# Machine Learning Models (optional - remove if you want to track models)
-# models/*.pkl
+# Machine Learning Models (models will be generated on first run if not present)
+# models/*.pkl  (commented out so models are included in git)
 
 # Log files
 *.log
