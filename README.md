@@ -14,7 +14,7 @@ A modern Flask web application that uses machine learning to predict breast canc
 - **Real-time Analysis**: Instant predictions with confidence scores and risk assessment
 ## 🚀 Live Demo
 
-**Deploy to see it live!** - Follow deployment instructions below
+https://breast-cancer-flask-app.onrender.com/
 
 ## 📊 Model Performance
 
@@ -176,20 +176,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Bootstrap team for the responsive UI framework
 - Flask community for the lightweight web framework
 
-## 📞 Contact
-
-- **Author**: Your Name
-- **Email**: your.email@example.com
-- **GitHub**: [@yourusername](https://github.com/yourusername)
-- **LinkedIn**: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-
----
 
 ⭐ **Star this repository if you found it helpful!**
-
-## Acknowledgments
-
-- Wisconsin Breast Cancer dataset from UCI Machine Learning Repository
-- Scikit-learn for machine learning capabilities
-- Bootstrap for responsive design components
-- Font Awesome for icons
